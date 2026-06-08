@@ -1,0 +1,25 @@
+workflows:
+  ios-build-no-sign:
+    name: iOS Build (Unsigned IPA)
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+    scripts:
+      - name: Fetch Flutter dependencies
+        script: flutter pub get
+      - name: Build iOS project (no-codesign)
+        script: flutter build ios --release --no-codesign
+      - name: Pack app into IPA
+        script: |
+          mkdir -p build/ios/iphoneos/Payload
+          mv build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload/
+          cd build/ios/iphoneos
+          zip -r tnt_toeic_app.ipa Payload
+    artifacts:
+      - build/ios/iphoneos/*.ipa
+    publishing:
+      email:
+        recipients:
+          - tanfb2023a@gmail.com
